@@ -9,13 +9,13 @@ def init():
     os.makedirs(f"{GIT_DIR}/objects")
 
 
-def hash_objects(data):
+def hash_object(data):
     oid = hashlib.sha256(data).hexdigest()
-    with open(f"{GIT_DIR}/objects/{oid}", "rb") as out:
+    with open(f"{GIT_DIR}/objects/{oid}", "wb") as out:
         out.write(data)
     return oid
 
 
-def get_objects(oid):
-    with open(f"{GIT_DIR}/objects/{oid}") as f:
+def get_object(oid):
+    with open(f"{GIT_DIR}/objects/{oid}", "rb") as f:
         return f.read()
