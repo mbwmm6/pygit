@@ -1,5 +1,6 @@
 import argparse
 import os
+import sys
 
 from . import data
 
@@ -20,13 +21,23 @@ def parse_args():
     hash_object_parse = commands.add_parser("hash-object")
     hash_object_parse.set_defaults(func=hash_object)
     hash_object_parse.add_argument("file")
+
+    cat_file_parse = commands.add_parser("cat-file")
+    cat_file_parse.set_defaults(func=cat_file)
+
     return parser.parse_args()
 
 
 def init(args):
     data.init()
-    print(f"Initialized empty pygit repository in {os.getcwd() / data.GIT_DIR}")
+    print(f"Initialized empty pygit repository in {os.getcwd()}/{data.GIT_DIR}")
 
-def hash_object():
+
+def hash_object(args):
     with open(args.file, "rb") as f:
         print(data.hash_object(f.read()))
+
+
+def cat_file(args):
+    sys.stdout.flush()
+    sys.stdout.buffer.write()

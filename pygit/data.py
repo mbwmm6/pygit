@@ -14,3 +14,8 @@ def hash_objects(data):
     with open(f"{GIT_DIR}/objects/{oid}", "rb") as out:
         out.write(data)
     return oid
+
+
+def get_objects(oid):
+    with open(f"{GIT_DIR}/objects/{oid}") as f:
+        return f.read()

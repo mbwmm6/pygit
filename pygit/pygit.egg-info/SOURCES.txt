@@ -1,0 +1,9 @@
+LICENSE
+setup.py
+src/cli.py
+src/data.py
+src/pygit.egg-info/PKG-INFO
+src/pygit.egg-info/SOURCES.txt
+src/pygit.egg-info/dependency_links.txt
+src/pygit.egg-info/entry_points.txt
+src/pygit.egg-info/top_level.txt
