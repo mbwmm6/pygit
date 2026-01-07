@@ -1,5 +1,21 @@
-build: 
-	python3.12 setup.py develop --user
+# Определение ОС
+ifeq ($(OS),Windows_NT)
+	PYTHON := python
+	PIP := pip
+	RM := rmdir /S /Q
+else
+	PYTHON := python3.12
+	PIP := pip3
+	RM := rm -rf
+endif
+
+.PHONY: build run clean
+
+build:
+	$(PYTHON) setup.py develop
 
 run:
-	pip install -r requirements.txt
+	$(PIP) install -r requirements.txt
+
+clean:
+	$(RM) build dist *.egg-info
