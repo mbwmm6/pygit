@@ -11,10 +11,10 @@ endif
 
 .PHONY: build run clean
 
-build:
+install:
 	$(PYTHON) setup.py develop
 
-run:
+build:
 	$(PIP) install -r requirements.txt
 
 clean:
