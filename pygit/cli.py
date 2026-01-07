@@ -33,7 +33,6 @@ def parse_args():
     read_tree_parse = commands.add_parser("read-tree")
     read_tree_parse.set_defaults(func=base.read_tree)
     read_tree_parse.add_argument("tree")
-<<<<<<< HEAD
 
     commit_parse = commands.add_parser("commit")
     commit_parse.set_defaults(func=commit)
@@ -46,13 +45,11 @@ def parse_args():
     checkout_parse = commands.add_parser("checkout")
     checkout_parse.set_defaults(func=checkout)
     checkout_parse.add_argument("oid")
-    
+
     tag_parse = commands.add_parser("tag")
     tag_parse.set_defaults(func=tag)
     tag_parse.add_argument("tag")
-    tag_parse.add_argument("oid", nargs='?')
-=======
->>>>>>> 0320d363ddf76e1aff124c75654f0248b0083b09
+    tag_parse.add_argument("oid", nargs="?")
     return parser.parse_args()
 
 
@@ -68,19 +65,16 @@ def hash_object(args):
 
 def cat_file(args):
     sys.stdout.flush()
-<<<<<<< HEAD
     print(base.write_tree())
 
 
 def write_tree(args):
-=======
->>>>>>> 0320d363ddf76e1aff124c75654f0248b0083b09
     print(base.write_tree())
 
 
 def read_tree(args):
     base.read_tree()
-<<<<<<< HEAD
+    print(base.commit(args.message))
 
 
 def commit(args):
@@ -104,5 +98,3 @@ def checkout(args):
 def tag(args):
     oid = args.oid or data.get_HEAD()
     base.create_tag(args.name, oid)
-=======
->>>>>>> 0320d363ddf76e1aff124c75654f0248b0083b09

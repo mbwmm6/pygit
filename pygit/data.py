@@ -8,8 +8,9 @@ def init():
     os.makedirs(GIT_DIR)
     os.makedirs(f"{GIT_DIR}/objects")
 
+
 def set_HEAD(oid):
-    with open(f"{GIT_DIR}/HEAD", 'w') as f:
+    with open(f"{GIT_DIR}/HEAD", "w") as f:
         f.write(oid)
 
 
