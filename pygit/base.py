@@ -1,6 +1,5 @@
-import itertools
-import operator
 import os
+import string
 from collections import namedtuple
 
 from . import data
@@ -10,11 +9,11 @@ def write_tree(directory="."):
     entries = []
     with os.scandir(directory) as it:
         for entry in it:
-            type_ = "blob"
             full = f"{directory}/{entry.name}"
             if is_ignored(full):
                 continue
             if entry.is_file(follow_symlinks=False):
+                type_ = "blob"
                 with open(full, "rb") as f:
                     oid = data.hash_object(f.read())
             elif entry.is_dir(follow_symlinks=False):
@@ -105,7 +104,7 @@ def read_tree(tree_oid):
 
 
 def commit(message):
-    commit = f"tree {write_tree}"
+    commit = f"tree {write_tree()}\n"
     HEAD = data.get_ref("HEAD")
     if HEAD:
         commit += f"parent {HEAD}\n"
@@ -116,7 +115,19 @@ def commit(message):
     return oid
 
 
+def resolve_commit(oid):
+    type_, content = data.get_object()
+    if type_ == "commit":
+        return oid
+    elif type_ == "tree":
+        assert False, "Cannot checkout a tree"
+    elif type_ == "blob":
+        assert False, "Cannot checkout a blob"
+    assert False, f"Unknown object type {type_}"
+
+
 def checkout(oid):
+    # oid = resolve_commit(oid)
     commit = get_commit(oid)
     read_tree(commit.tree)
     data.set_HEAD(oid)
@@ -129,8 +140,10 @@ def get_commit(oid):
     parent = None
     commit = data.get_object(oid, "commit").decode()
     lines = iter(commit.splitlines())
-    for line in itertools.takewhile(operator.truth, lines):
-        key, value = lines.split(" ", 1)
+    for line in lines:
+        if not line:
+            break
+        key, value = line.split(" ", 1)
         if key == "tree":
             tree = value
         elif key == "parent":
@@ -143,6 +156,22 @@ def get_commit(oid):
 
 def create_tag(name, oid):
     data.update_ref(f"refs/tags/{name}", oid)
+
+
+def get_oid(name):
+    refs_to_try = [
+        f"{name}",
+        f"refs/{name}",
+        f"refs/tags/{name}",
+        f"refs/heads/{name}",
+    ]
+    for ref in refs_to_try:
+        if data.get_ref(ref):
+            return data.get_ref(ref)
+    is_hex = all(c in string.hexdigits for c in name)
+    if len(name) == 40 and is_hex:
+        return name
+    assert False, f"Unknown name {name}"
 
 
 def is_ignored(path):

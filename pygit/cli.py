@@ -3,8 +3,7 @@ import os
 import sys
 import textwrap
 
-from . import base
-from . import data
+from . import base, data
 
 
 def main():
@@ -17,6 +16,8 @@ def parse_args():
     commands = parser.add_subparsers(dest="command")
     commands.required = True
 
+    oid = base.get_oid
+
     init_parser = commands.add_parser("init")
     init_parser.set_defaults(func=init)
 
@@ -26,13 +27,14 @@ def parse_args():
 
     cat_file_parse = commands.add_parser("cat-file")
     cat_file_parse.set_defaults(func=cat_file)
+    cat_file_parse.add_argument("object", type=oid)
 
     write_tree_parse = commands.add_parser("write-tree")
     write_tree_parse.set_defaults(func=write_tree)
 
     read_tree_parse = commands.add_parser("read-tree")
     read_tree_parse.set_defaults(func=base.read_tree)
-    read_tree_parse.add_argument("tree")
+    read_tree_parse.add_argument("tree", type=oid)
 
     commit_parse = commands.add_parser("commit")
     commit_parse.set_defaults(func=commit)
@@ -40,16 +42,16 @@ def parse_args():
 
     log_parse = commands.add_parser("log")
     log_parse.set_defaults(func=log)
-    log_parse.add_argument("oid", nargs="?")
+    log_parse.add_argument("oid", type=oid, nargs="?")
 
     checkout_parse = commands.add_parser("checkout")
     checkout_parse.set_defaults(func=checkout)
-    checkout_parse.add_argument("oid")
+    checkout_parse.add_argument("oid", type=oid)
 
     tag_parse = commands.add_parser("tag")
     tag_parse.set_defaults(func=tag)
-    tag_parse.add_argument("tag")
-    tag_parse.add_argument("oid", nargs="?")
+    tag_parse.add_argument("name")
+    tag_parse.add_argument("oid", type=oid, nargs="?")
     return parser.parse_args()
 
 
