@@ -9,6 +9,8 @@ from . import base, data
 
 
 def main():
+    if len(sys.argv) == 1:
+        sys.argv.append("--help")
     args = parse_args()
     args.func(args)
 
