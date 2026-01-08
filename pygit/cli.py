@@ -50,7 +50,7 @@ def parse_args():
 
     checkout_parse = commands.add_parser("checkout")
     checkout_parse.set_defaults(func=checkout)
-    checkout_parse.add_argument("oid", type=oid)
+    checkout_parse.add_argument("commit")
 
     tag_parse = commands.add_parser("tag")
     tag_parse.set_defaults(func=tag)
@@ -68,7 +68,7 @@ def parse_args():
 
 
 def init(args):
-    data.init()
+    base.init()
     print(f"Initialized empty pygit repository in {os.getcwd()}/{data.GIT_DIR}")
 
 
@@ -104,7 +104,7 @@ def log(args):
 
 
 def checkout(args):
-    base.checkout(args.oid)
+    base.checkout(args.commit)
 
 
 def tag(args):

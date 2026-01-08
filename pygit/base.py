@@ -5,6 +5,11 @@ from collections import deque, namedtuple
 from . import data
 
 
+def init():
+    data.init()
+    data.update_ref("HEAD", data.RefValue(symbolic=True, value="refs/heads/master"))
+
+
 def write_tree(directory="."):
     entries = []
     with os.scandir(directory) as it:
@@ -126,15 +131,24 @@ def resolve_commit(oid):
     assert False, f"Unknown object type {type_}"
 
 
-def checkout(oid):
+def checkout(name):
+    oid = get_oid(name)
     commit = get_commit(oid)
     read_tree(commit.tree)
-    data.update_ref("HEAD", data.RefValue(symbolic=False, value=oid))
+    if is_branch(name):
+        HEAD = data.RefValue(symbolic=True, value=f"refs/heads/{name}")
+    else:
+        HEAD = data.RefValue(symbolic=False, value=oid)
+    data.update_ref("HEAD", HEAD, defer=False)
 
 
 def create_branch(name, oid):
     data.update_ref(f"refs/heads/{name}", oid)
     data.update_ref(f"refs/tags/{name}", data.RefValue(symbolic=False, value=oid))
+
+
+def is_branch(branch):
+    return data.get_ref(f"refs/heads/{branch}").value is not None
 
 
 Commit = namedtuple("Commit", ["tree", "parent", "message"])
