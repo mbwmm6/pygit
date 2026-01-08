@@ -114,9 +114,10 @@ def tag(args):
 def k(args):
     dot = ["digraph commits {"]
     oids = set()
-    for refname, ref in data.iter_refs():
+    for refname, ref in data.iter_refs(defer=False):
         dot.append(f'"{refname}" [shape=note]')
         dot.append(f'"{refname}" -> "{ref.value}"')
+    if not ref.symbolic:
         oids.add(ref.value)
     for oid in base.iter_commits_and_parent(oids):
         commit = base.get_commit(oid)
