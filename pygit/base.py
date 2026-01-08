@@ -159,6 +159,8 @@ def create_tag(name, oid):
 
 
 def get_oid(name):
+    if name == "@":
+        name = "HEAD"
     refs_to_try = [
         f"{name}",
         f"refs/{name}",

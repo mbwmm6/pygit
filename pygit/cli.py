@@ -42,7 +42,7 @@ def parse_args():
 
     log_parse = commands.add_parser("log")
     log_parse.set_defaults(func=log)
-    log_parse.add_argument("oid", type=oid, nargs="?")
+    log_parse.add_argument("oid", default="@", type=oid, nargs="?")
 
     checkout_parse = commands.add_parser("checkout")
     checkout_parse.set_defaults(func=checkout)
@@ -51,7 +51,10 @@ def parse_args():
     tag_parse = commands.add_parser("tag")
     tag_parse.set_defaults(func=tag)
     tag_parse.add_argument("name")
-    tag_parse.add_argument("oid", type=oid, nargs="?")
+    tag_parse.add_argument("oid", default="@", type=oid, nargs="?")
+
+    k_parse = commands.add_parser("k")
+    k_parse.set_defaults(func=k)
     return parser.parse_args()
 
 
@@ -84,7 +87,7 @@ def commit(args):
 
 
 def log(args):
-    oid = args.oid or data.get_ref("HEAD")
+    oid = args.oid
     while oid:
         commit = base.get_commit(oid)
         print(f"commit {oid}\n")
@@ -98,5 +101,9 @@ def checkout(args):
 
 
 def tag(args):
-    oid = args.oid or data.get_ref("HEAD")
-    base.create_tag(args.name, oid)
+    base.create_tag(args.name, args.oid)
+
+
+def k(args):
+    for refname, ref in data.iter_refs():
+        print(refname, ref)
