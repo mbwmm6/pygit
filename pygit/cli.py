@@ -1,7 +1,9 @@
 import argparse
 import os
+import subprocess
 import sys
 import textwrap
+import webbrowser
 
 from . import base, data
 
@@ -105,12 +107,20 @@ def tag(args):
 
 
 def k(args):
+    dot = ["digraph commits {"]
     oids = set()
     for refname, ref in data.iter_refs():
-        print(refname, ref)
+        dot.append(f'"{refname}" [shape=note]')
+        dot.append(f'"{refname}" -> "{ref}"')
         oids.add(ref)
     for oid in base.iter_commits_and_parent(oids):
         commit = base.get_commit(oid)
-        print(oid)
+        dot.append(f'"{oid}" [shape=box style=filled label="{oid[:10]}"]')
         if commit.parent:
-            print("Parent", commit.parent)
+            dot.append(f'"{oid}" -> "{commit.parent}"')
+    dot.append("}")
+    dot_text = "\n".join(dot)
+    print(dot_text)
+    out = "commits.png"
+    subprocess.run(["dot", "-Tpng", "-o", out], input=dot_text.encode(), check=True)
+    webbrowser.open(os.path.abspath(out))
