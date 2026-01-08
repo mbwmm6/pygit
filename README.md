@@ -44,3 +44,14 @@ make build
 5. Установите `pygit`
 ```bash
 make install
+```
+
+```bash
+bash > pygit
+usage: pygit [-h] {init,hash-object,cat-file,write-tree,read-tree,commit,log,checkout,tag,k} ...
+
+positional arguments:
+  {init,hash-object,cat-file,write-tree,read-tree,commit,log,checkout,tag,k}
+
+optional arguments:
+  -h, --help            show this help message and exit
