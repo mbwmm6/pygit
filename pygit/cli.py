@@ -59,6 +59,11 @@ def parse_args():
 
     k_parse = commands.add_parser("k")
     k_parse.set_defaults(func=k)
+
+    branch_parse = commands.add_parser("branch")
+    branch_parse.set_defaults(func=branch)
+    branch_parse.add_argument("name")
+    branch_parse.add_argument("start_point", default="@", type=oid, nargs="?")
     return parser.parse_args()
 
 
@@ -91,13 +96,11 @@ def commit(args):
 
 
 def log(args):
-    oid = args.oid
-    while oid:
+    for oid in base.iter_commits_and_parent({args.oid}):
         commit = base.get_commit(oid)
         print(f"commit {oid}\n")
         print(textwrap.indent(commit.message, "      "))
         print("")
-        oid = commit.parent
 
 
 def checkout(args):
@@ -113,8 +116,8 @@ def k(args):
     oids = set()
     for refname, ref in data.iter_refs():
         dot.append(f'"{refname}" [shape=note]')
-        dot.append(f'"{refname}" -> "{ref}"')
-        oids.add(ref)
+        dot.append(f'"{refname}" -> "{ref.value}"')
+        oids.add(ref.value)
     for oid in base.iter_commits_and_parent(oids):
         commit = base.get_commit(oid)
         dot.append(f'"{oid}" [shape=box style=filled label="{oid[:10]}"]')
@@ -126,3 +129,8 @@ def k(args):
     out = "commits.png"
     subprocess.run(["dot", "-Tpng", "-o", out], input=dot_text.encode(), check=True)
     webbrowser.open(os.path.abspath(out))
+
+
+def branch(args):
+    base.create_branch(args.name, args.start_point)
+    print(f"Branch {args.name} created at {args.start_point[:10]}")
